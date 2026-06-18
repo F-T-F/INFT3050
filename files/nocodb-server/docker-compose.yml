@@ -1,0 +1,13 @@
+services:
+  nocodb-server:
+    image: nocodb/nocodb:latest
+    container_name: nocodb-server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nocodb/data:/usr/app/data
+#    environment:
+      # 可选：设置初始管理员邮箱和密码（首次启动时会自动创建）
+      # - NC_ADMIN_EMAIL=admin@example.com
+      # - NC_ADMIN_PASSWORD=admin123
