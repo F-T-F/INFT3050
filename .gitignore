@@ -1,0 +1,25 @@
+# ---- Node ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---- Build output ----
+build/
+dist/
+/coverage
+
+# ---- Environment ----
+.env
+.env.local
+.env.*.local
+
+# ---- Database (DO NOT commit per assignment rules) ----
+nocodb-server/nocodb/
+*.db
+*.sqlite
+*.sqlite3
+
+# ---- OS / editor ----
+.DS_Store
+.idea/
