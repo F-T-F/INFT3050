@@ -4,11 +4,6 @@
 > Purpose: manual test checklist for the prototype so we can verify the main
 > user workflows before each SCRUM demo.
 
-## How to use
-- Run the frontend (`my-shop`) and backend (`nocodb-server`) locally.
-- Go through each case below and mark Pass / Fail / N/A.
-- Log any failure in the "Bugs found" table at the bottom with a screenshot.
-
 ## 1. Home page
 - [ ] Page loads without console errors
 - [ ] Featured products are displayed
