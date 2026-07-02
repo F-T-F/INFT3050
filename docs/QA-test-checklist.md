@@ -1,9 +1,5 @@
 # QA Test Checklist — Entertainment Guild Web App
 
-> Owner: Fan Xinming (QA / PM) · Status: **in progress**
-> Purpose: manual test checklist for the prototype so we can verify the main
-> user workflows before each SCRUM demo.
-
 ## 1. Home page
 - [ ] Page loads without console errors
 - [ ] Featured products are displayed
