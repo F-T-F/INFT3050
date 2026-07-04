@@ -1,0 +1,14 @@
+services:
+  nocodb-server:
+    image: nocodb/nocodb:latest
+    container_name: nocodb-server
+    restart: unless-stopped
+    ports:
+      # host 8090 -> container 8080, matches my-shop/.env.local (REACT_APP_NC_BASE_URL=8090)
+      - "8090:8080"
+    volumes:
+      - ./nocodb/data:/usr/app/data
+#    environment:
+      # 可选：设置初始管理员邮箱和密码（首次启动时会自动创建）
+      # - NC_ADMIN_EMAIL=admin@example.com
+      # - NC_ADMIN_PASSWORD=admin123
