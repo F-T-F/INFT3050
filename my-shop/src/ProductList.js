@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getProducts, GENRE_LABEL } from './utils/api';
+import { getProducts } from './utils/api';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProductModal from './components/ProductModal';
@@ -16,7 +16,7 @@ const GENRE_ICON = { 1: '📚', 2: '🎬', 3: '🎮' };
 
 export const genreIcon = (genreId) => GENRE_ICON[genreId] || '🛍️';
 
-function ProductList() {
+function ProductList({ pageTitle = 'All Product', showFilters = false }) {
     const [searchParams] = useSearchParams();
     const queryFromUrl = searchParams.get('q') || '';
 
@@ -188,7 +188,7 @@ function ProductList() {
 
             <section className="search-results-section">
                 <div className="container">
-                    <h1 className="page-title">Browse the Catalogue</h1>
+                    <h1 className="page-title">{pageTitle}</h1>
                     <div className="results-header">
                         <div className="results-summary">
                             {loading ? 'Loading…' : <>Showing {searchInput && <>results for <strong>"{searchInput}"</strong> </>}({filteredProducts.length} items)</>}
@@ -204,8 +204,8 @@ function ProductList() {
                         </div>
                     </div>
 
-                    <div className="results-wrapper">
-                        <aside className="filters">
+                    <div className={`results-wrapper ${showFilters ? '' : 'no-filters'}`}>
+                        {showFilters && <aside className="filters">
                             <div className="filter-group">
                                 <h3>Category</h3>
                                 <div className="filter-options">
@@ -226,7 +226,7 @@ function ProductList() {
                                 </div>
                                 <button className="apply-btn" onClick={applyPriceFilter}>Apply</button>
                             </div>
-                        </aside>
+                        </aside>}
 
                         <div className="results-content">{renderProducts()}</div>
                     </div>

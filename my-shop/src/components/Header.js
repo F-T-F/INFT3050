@@ -31,15 +31,15 @@ function Header({ initialQuery = '' }) {
 
                 <nav className="nav-links" aria-label="Main navigation">
                     <Link to="/products">Products</Link>
-                    <Link to="/products">Categories</Link>
+                    <Link to="/categories">Categories</Link>
                 </nav>
 
                 <div className="auth-cart">
                     <Link to="/login" className="link-btn">Login</Link>
                     <Link to="/register" className="register-btn">Register</Link>
-                    <button type="button" className="cart-icon" title="View cart (coming soon)" aria-label="Shopping cart">
+                    <Link to="/cart" className="cart-icon" title="View cart" aria-label="Shopping cart">
                         Cart <span aria-hidden="true">🛒</span>
-                    </button>
+                    </Link>
                     <Link to="/account" className="account-icon" title="Your account" aria-label="Your account">
                         <span aria-hidden="true">👤</span>
                     </Link>

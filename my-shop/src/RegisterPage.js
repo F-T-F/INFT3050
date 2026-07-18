@@ -4,8 +4,19 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import { registerCustomer } from './utils/api';
 import { setCurrentUser } from './utils/session';
+import { saveAddress } from './utils/cart';
 
-const EMPTY_FORM = { name: '', email: '', password: '', confirmPassword: '' };
+const STATES = ['NSW', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'ACT', 'NT'];
+const EMPTY_FORM = {
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    streetAddress: '',
+    suburb: '',
+    postCode: '',
+    state: 'NSW',
+};
 
 function RegisterPage() {
     const [form, setForm] = useState(EMPTY_FORM);
@@ -21,6 +32,20 @@ function RegisterPage() {
             setStatus({ type: 'error', message: 'Passwords do not match.' });
             return;
         }
+        if (!/[A-Za-z]/.test(form.streetAddress) || !/\d/.test(form.streetAddress)) {
+            setStatus({ type: 'error', message: 'Street address must contain letters and numbers.' });
+            return;
+        }
+        if (!/^\d+$/.test(form.postCode)) {
+            setStatus({ type: 'error', message: 'Postcode must contain numbers only.' });
+            return;
+        }
+        const address = {
+            streetAddress: form.streetAddress,
+            suburb: form.suburb,
+            postCode: form.postCode,
+            state: form.state,
+        };
         setSubmitting(true);
         setStatus(null);
         try {
@@ -28,7 +53,9 @@ function RegisterPage() {
                 name: form.name,
                 email: form.email,
                 password: form.password,
+                address,
             });
+            saveAddress(address);
             setCurrentUser(customer); // sign the new customer in
             setStatus({ type: 'success', message: 'Account created! Taking you to your profile…' });
             setTimeout(() => navigate('/account'), 900);
@@ -68,6 +95,26 @@ function RegisterPage() {
                             <div className="form-field">
                                 <label htmlFor="email">Email Address</label>
                                 <input id="email" type="email" placeholder="example@example.com" value={form.email} onChange={handleChange('email')} required />
+                            </div>
+                            <div className="form-field">
+                                <label htmlFor="register-street">Street Address</label>
+                                <input id="register-street" value={form.streetAddress} onChange={handleChange('streetAddress')} placeholder="221 Ring Road" required />
+                            </div>
+                            <div className="form-row">
+                                <div className="form-field">
+                                    <label htmlFor="register-suburb">Suburb</label>
+                                    <input id="register-suburb" value={form.suburb} onChange={handleChange('suburb')} placeholder="Callaghan" required />
+                                </div>
+                                <div className="form-field">
+                                    <label htmlFor="register-postcode">Postcode</label>
+                                    <input id="register-postcode" inputMode="numeric" value={form.postCode} onChange={handleChange('postCode')} placeholder="2308" required />
+                                </div>
+                            </div>
+                            <div className="form-field">
+                                <label htmlFor="register-state">State</label>
+                                <select id="register-state" value={form.state} onChange={handleChange('state')} required>
+                                    {STATES.map((state) => <option key={state} value={state}>{state}</option>)}
+                                </select>
                             </div>
                             <div className="form-row">
                                 <div className="form-field">

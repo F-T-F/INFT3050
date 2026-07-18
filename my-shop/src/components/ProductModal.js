@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { genreIcon } from '../ProductList';
+import { addCartItem } from '../utils/cart';
 
 // Long-form product detail pop-up, wired to the real Product schema
 // (Name, Author, Description, Genre/subGenre names, price from Stocktake).
 function ProductModal({ product, onClose }) {
+    const [added, setAdded] = useState(false);
+
     useEffect(() => {
         const onKey = (e) => { if (e.key === 'Escape') onClose(); };
         document.addEventListener('keydown', onKey);
@@ -11,6 +14,11 @@ function ProductModal({ product, onClose }) {
     }, [onClose]);
 
     if (!product) return null;
+
+    const handleAddToCart = () => {
+        addCartItem(product);
+        setAdded(true);
+    };
 
     const priceLabel =
         product.price == null ? 'Price unavailable'
@@ -34,8 +42,9 @@ function ProductModal({ product, onClose }) {
                         </div>
                         <div className="modal-price">{priceLabel}</div>
                         <p className="modal-desc">{product.Description}</p>
+                        {added && <div className="auth-message auth-message-success" role="status">Added to cart.</div>}
                         <div className="modal-actions">
-                            <button className="primary-btn" title="Add to cart (coming soon)">Add to Cart</button>
+                            <button className="primary-btn" onClick={handleAddToCart}>Add to Cart</button>
                             <button className="link-btn" onClick={onClose}>Back to results</button>
                         </div>
                     </div>
