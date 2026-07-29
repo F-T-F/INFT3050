@@ -16,9 +16,14 @@ dist/
 
 # ---- Database (DO NOT commit per assignment rules) ----
 nocodb-server/nocodb/
+db/
+noco/
 *.db
 *.sqlite
 *.sqlite3
+
+# ---- Local backup files ----
+compose.yml.orig
 
 # ---- OS / editor ----
 .DS_Store
