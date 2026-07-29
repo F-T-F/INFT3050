@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -37,9 +37,11 @@ function ProfilePage() {
     const [savingProfile, setSavingProfile] = useState(false);
     const [savingAddress, setSavingAddress] = useState(false);
     const [editingOrderId, setEditingOrderId] = useState(null);
+    const [closingOrderEditId, setClosingOrderEditId] = useState(null);
     const [orderAddress, setOrderAddress] = useState(null);
     const [orderMessage, setOrderMessage] = useState(null);
     const [savingOrder, setSavingOrder] = useState(false);
+    const closeOrderEditTimeoutRef = useRef(null);
 
     // Admins have an httpOnly cookie we can re-validate; customers (Patron
     // sign-in) don't, so skip the /me check for them.
@@ -78,6 +80,12 @@ function ProfilePage() {
             .finally(() => { if (active) setOrdersLoading(false); });
         return () => { active = false; };
     }, [user]);
+
+    useEffect(() => {
+        return () => {
+            window.clearTimeout(closeOrderEditTimeoutRef.current);
+        };
+    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -142,9 +150,32 @@ function ProfilePage() {
     };
 
     const startOrderEdit = (order) => {
+        window.clearTimeout(closeOrderEditTimeoutRef.current);
+        setClosingOrderEditId(null);
         setEditingOrderId(order.id);
         setOrderAddress({ ...order.address, state: order.address.state || 'NSW' });
         setOrderMessage(null);
+    };
+
+    const closeOrderEdit = () => {
+        if (!editingOrderId) return;
+
+        window.clearTimeout(closeOrderEditTimeoutRef.current);
+
+        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            setEditingOrderId(null);
+            setOrderAddress(null);
+            setClosingOrderEditId(null);
+            return;
+        }
+
+        const closingId = editingOrderId;
+        setClosingOrderEditId(closingId);
+        closeOrderEditTimeoutRef.current = window.setTimeout(() => {
+            setEditingOrderId(null);
+            setOrderAddress(null);
+            setClosingOrderEditId(null);
+        }, 160);
     };
 
     const updateOrderAddress = (field) => (event) => {
@@ -168,9 +199,8 @@ function ProfilePage() {
                 address: orderAddress,
             });
             setOrders((current) => current.map((order) => order.id === updatedOrder.id ? updatedOrder : order));
-            setEditingOrderId(null);
-            setOrderAddress(null);
             setOrderMessage({ type: 'success', text: `Order #${updatedOrder.id} delivery address updated.` });
+            closeOrderEdit();
         } catch (error) {
             setOrderMessage({
                 type: 'error',
@@ -372,7 +402,7 @@ function ProfilePage() {
                                                         <td><button type="button" className="link-btn" onClick={() => startOrderEdit(order)}>Edit delivery</button></td>
                                                     </tr>
                                                     {editingOrderId === order.id && (
-                                                        <tr className="order-edit-row">
+                                                        <tr className={`order-edit-row ${closingOrderEditId === order.id ? 'is-closing' : ''}`}>
                                                             <td colSpan="5">
                                                                 <form className="order-edit-form" onSubmit={handleOrderSave}>
                                                                     <div className="form-field order-edit-street">
@@ -394,7 +424,7 @@ function ProfilePage() {
                                                                         </select>
                                                                     </div>
                                                                     <div className="order-edit-actions">
-                                                                        <button type="button" className="admin-light-btn" onClick={() => { setEditingOrderId(null); setOrderAddress(null); }}>Cancel</button>
+                                                                        <button type="button" className="admin-light-btn" onClick={closeOrderEdit}>Cancel</button>
                                                                         <button type="submit" className="admin-primary-btn" disabled={savingOrder}>{savingOrder ? 'Saving...' : 'Save'}</button>
                                                                     </div>
                                                                 </form>

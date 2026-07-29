@@ -233,7 +233,13 @@ function ProductList({ pageTitle = 'All Product', showFilters = false }) {
                 </div>
             </section>
 
-            <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+            {selectedProduct && (
+                <ProductModal
+                    key={selectedProduct.ID}
+                    product={selectedProduct}
+                    onClose={() => setSelectedProduct(null)}
+                />
+            )}
 
             <Footer />
         </div>

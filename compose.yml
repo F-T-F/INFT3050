@@ -1,0 +1,57 @@
+services:
+  noco:
+    environment:
+      NC_DB: "mssql://host.docker.internal:1433?u=sa&p=inft3050_&d=master"
+    image: nocodb/nocodb:0.98.1
+    ports:
+      # host 8080 was taken by a local Apache/PHP; remapped to 8088.
+      # Internal port stays 8080 (auth reaches it via http://noco:8080), so nothing else changes.
+      - 8088:8080
+    volumes:
+      - ./noco:/usr/app/data/
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: inft3050_
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64 
+    restart: always
+    volumes:
+      - ./db/:/var/opt/mssql/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P inft3050_ -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 20
+      start_period: 60s
+      timeout: 15s
+    ports:
+      - 1433:1433
+  auth:
+    build: ./auth
+    depends_on:
+      db:
+        condition: service_healthy
+      noco:
+        condition: service_started
+    environment:
+      # JWT / cookie
+      - NODE_ENV=development
+      - PORT=3001
+      - JWT_SECRET=change-me
+      - JWT_EXPIRES=3600
+      # MSSQL connection (to YOUR app’s users table)
+      - MSSQL_SERVER=db
+      - MSSQL_DB=StoreDB
+      - MSSQL_USER=sa
+      - MSSQL_PASSWORD=inft3050_
+      - MSSQL_ENCRYPT=false
+      # NocoDB proxy target + API token (create a Personal Access Token in NocoDB UI)
+      - NOCO_URL=http://noco:8080
+      - NOCO_API_TOKEN=sPi8tSXBw3BgursDPmfAJz8B3mPaHA6FQ9PWZYJZ
+      # CORS for students’ React dev servers
+      - CORS_ORIGINS=http://localhost:3000
+    ports:
+      - "3001:3001"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 // Shared site header. `initialQuery` pre-fills the search box (used on the
 // results page so the current keyword is shown, matching the wireframe).
@@ -30,19 +30,19 @@ function Header({ initialQuery = '' }) {
                 </form>
 
                 <nav className="nav-links" aria-label="Main navigation">
-                    <Link to="/products">Products</Link>
-                    <Link to="/categories">Categories</Link>
+                    <NavLink to="/products" className={({ isActive }) => isActive ? 'active' : undefined}>Products</NavLink>
+                    <NavLink to="/categories" className={({ isActive }) => isActive ? 'active' : undefined}>Categories</NavLink>
                 </nav>
 
                 <div className="auth-cart">
-                    <Link to="/login" className="link-btn">Login</Link>
-                    <Link to="/register" className="register-btn">Register</Link>
-                    <Link to="/cart" className="cart-icon" title="View cart" aria-label="Shopping cart">
+                    <NavLink to="/login" className={({ isActive }) => `link-btn${isActive ? ' active' : ''}`}>Login</NavLink>
+                    <NavLink to="/register" className={({ isActive }) => `register-btn${isActive ? ' active' : ''}`}>Register</NavLink>
+                    <NavLink to="/cart" className={({ isActive }) => `cart-icon${isActive ? ' active' : ''}`} title="View cart" aria-label="Shopping cart">
                         Cart <span aria-hidden="true">🛒</span>
-                    </Link>
-                    <Link to="/account" className="account-icon" title="Your account" aria-label="Your account">
+                    </NavLink>
+                    <NavLink to="/account" className={({ isActive }) => `account-icon${isActive ? ' active' : ''}`} title="Your account" aria-label="Your account">
                         <span aria-hidden="true">👤</span>
-                    </Link>
+                    </NavLink>
                 </div>
             </div>
         </header>
